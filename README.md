@@ -87,9 +87,15 @@ While there is an intuitive relationship between high costs of building material
 
 To use our model for forecasting through June 2023, we had to interpolate values for our exogenous variables at the end of our data set. Because the cost of Building Materials is lagged by 12 Months, we only had to interpolate a single value, whereas for Manhattan Sale Prices and Employees in Construction we had to interpolate values for around a half a year. Values for Manhattan Sale Prices have very little effect on the model, so the only space for significant error comes from Employees in Construction, which we assumed to be rising at a monthly rate equal to the average monthly rate over the past year. 
 
+![Retrained Model Performance on Past Data](../../blob/main/images/FinalModel.png)
+
 Prior to forecasting, the SARIMAX model was retrained on the full 2007-2022 data set. Coefficients for all variables rose slightly (7.2239 for Building Materials and 21.0244 for Employees in Construction), but remained within the 95% confidence interval that was calculated based on data for the 2007-2019 period. This should reassure us, since it means that the model's coefficients haven't been drastically shifted due to the greater volatility of the 2019-2022 period.
 
+![Retrained Model Coefficients](../../blob/main/images/exog_contributions.png)
+
 Forecasting through June 2023, our retrained model predicts that median rents will drop to almost $3100 in September of 2022 before rising again and stabilizing at around $3400 by the middle of 2023. The worst case scenario (the upper bound of the model's 95% confidence interval) sees an only slight slowing in rental increases, with rents rising above $3700 by mid-2023, while the best case scenario (the lower bound of the model's 95% confidence interval) sees median rents dropping below $3000 and then stabilizing between $3000 and $3100 by mid-next year.
+
+![Model Forecast](../../blob/main/images/forecast.png)
 
 ### Recommendations and Caveats
 
