@@ -119,6 +119,6 @@ U.S. Bureau of Labor Statistics, Consumer Price Index for All Urban Consumers: A
 
 ### Links to notebook and data
 
-View the Jupyter [notebook](../index.ipynb) for this project.
+View the Jupyter [notebook](../../tree/main/index.ipynb) for this project.
 
-Access the [CSV files](../data) that were used for analysis.
+Access the [CSV files](../../tree/main/data) that were used for analysis.
