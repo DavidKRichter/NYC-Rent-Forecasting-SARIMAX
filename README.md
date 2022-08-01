@@ -1,4 +1,4 @@
-# Using SARIMAX modeling to predict the New York Rental Market
+# Using SARIMAX Modeling to Predict the New York Rental Market
 
 2022 is a hard time to be a renter in New York City. Rental prices have reached record highs and news outlets including the [New York Times](https://www.nytimes.com/2022/07/11/business/economy/rent-inflation-interest-rates.html) report that potential homeowners priced out of a hot housing market may be driving demand for rentals up even further. A more recent Times [story](https://www.nytimes.com/2022/08/01/nyregion/why-its-so-hard-to-find-an-affordable-apartment-in-new-york.html) blames New York's restrictive zoning regulations for the city's failure to keep up with demand increasing demand.
 
@@ -71,7 +71,7 @@ I next looked at the best SARIMAX models by RMSE. The top 2 used Building Materi
 
 The model I ultimately chose included three exogenous regressors: Building Materials 12 Month Lag, Employees in Construction 6 Month Lag, and Manhattan Sale Prices 6 Month lag. The first version of this model had an error of 128, which only slightly above that of the lowest error models, while it's AIC was 855. Error could be reduced to 135 and AIC to 835 by adding AR terms through lag 2 and MA terms through lag 7. This also reduced the error of the 2010-2013 dynamic prediction from 322 to 154. This is ideal because it means that the means that even though the model was selected primarily for its ability to predict rental prices for the 2019-2022 period, it also performs well on earlier periods, including both the stable 2013-2019 period and the more anomalous recovery period of 2010-2013. While this model's AIC wasn't quite as low as that of the best SARIMA model it did satisfy the condition of minimizing AIC score while significantly improving upon the performance of the most accurate SARIMA model.
 
-### Model coefficients and interpretation
+### Model Coefficients and Interpretation
 
 While the Manhattan Sale Price coefficient was not significant, Building Materials 12 Month Lag and Employees in Construction 6 Month Lag had coefficients of 6.5523 and 16.1230 respectively, with p-values below 0.0005.
 
@@ -79,7 +79,43 @@ This means that in our model, Building Materials costs account for $520 in total
 
 This shows up most dramatically at the beginning of COVID when a drop in Employees in Construction precedes a drop in rental prices and in late 2021, when the rise in the cost of construction materials a year earlier corresponds to a rise in rental prices. 
 
-While there is an intuitive relationship between high costs of building material and high housing costs. The fact that the number of employees in construction is a leading indicator of rental price rises is slightly harder to explain. In the long run, we would expect that more employees in construction would stabilize rental prices, but it seems like in the short run, the number of employees in construction is anticipating high demand, though not early enough to prevent prices from rising. It therefore makes sense to think of high construction costs as a cause of high housing costs, but a growth in the construction sector as simply a leading indicator.
+While there is an intuitive relationship between high costs of building material and high housing costs, the fact that the number of employees in construction is a leading indicator of rental price rises is slightly harder to explain. In the long run, we would expect that more employees in construction would stabilize rental prices, but it seems like in the short run, the number of employees in construction is anticipating high demand, though not enough to prevent prices from rising. It therefore probably makes sense to think of high construction costs as a cause of high housing costs, but a growth in the construction sector as simply a leading indicator.
 
 ### Using our Model for Forecasting
+
+To use our model for forecasting through June 2023, we had to interpolate values for our predictive variables at the end of our data set. Because the cost of Building Materials is lagged by 12 Months, we only had to interpolate a single value, whereas for Manhattan Sale Prices and Employees in Construction we had to interpolate values for around a half a year. Values for Manhattan Sale Prices have very little effect on the model, so the only space for significant error comes from Employees in Construction, which we assumed to be rising at a monthly rate equal to the average monthly rate over the past year. 
+
+Prior to forecasting the SARIMAX model was retrained on the full 2007-2022 data set. Coefficients for all variables rose slightly (7.2239 for Building Materials and 21.0244 for Employees in Construction), but remained within the 95% confidence interval that was calculated based on data for the 2007-2019 period. This should reassure us, since it means that the model's coefficients haven't been drastically shifted due to the greater volatility of the 2019-2022 period.
+
+Forecasting through June 2023, our retrained model predicts that median rents will drop to almost $3100 in September of 2022 before rising again and stabilizing at around $3400 by the middle of 2023. The worst case scenario (the upper bound of the model's 95% confidence interval) sees an only slight slowing in rental increases, with rents rising above $3700 by mid-2023, while the best case scenario (the lower bound of the model's 95% confidence interval) sees median rents dropping below $3000 and then stabilizing between $3000 and $3100 by mid-next year.
+
+### Recommendations and Caveats
+
+Assuming the mean prediction to be the correct one, we would advise renters to wait until September to sign a new lease. While our model suggests a strong likelihood that rents could rise slightly during this period rather than fall, we're unlikely to see rises comparable to those we've seen in the past six months.
+
+That said, there are a two other factors to take into account that we weren't able to address with SARIMAX modeling. 
+
+First, because the target data has been smoothed, it doesn't fully account for seasonal fluctuations in rental prices. However, because rents are typically lower during winter months, the prospect of seasonal fluctuations should if anything strengthen our recommendation to hold off before signing a new lease.
+
+Second, the fact that we selected a model based on its full 2007-2022 track record means that the model necessarily fails to register the effects of variables whose influence on the rental market is less consistent and more dependent on specific conjunctural factors. For example, we were unable to incorporate interest rate data into our model, even though shifts in US monetary policy and the bond market are likely have economic effects that extend to the rental market. 
+
+### Sources
+
+[StreetEasy Price Indices](https://streeteasy.com/blog/data-dashboard)
+
+Freddie Mac, 30-Year Fixed Rate Mortgage Average in the United States [MORTGAGE30US], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/MORTGAGE30US, July 18, 2022.
+
+Board of Governors of the Federal Reserve System (US), Federal Funds Effective Rate [FEDFUNDS], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/FEDFUNDS, July 21, 2022.
+
+U.S. Bureau of Economic Analysis and Federal Reserve Bank of St. Louis, Total Personal Income in New York [NYOTOT], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/NYOTOT, July 25, 2022.
+
+U.S. Bureau of Economic Analysis and Federal Reserve Bank of St. Louis, Total Wages and Salaries in New York [NYWTOT], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/NYWTOT, July 20, 2022.
+
+U.S. Bureau of Labor Statistics and Federal Reserve Bank of St. Louis, All Employees: Construction: Residential Building Construction in New York [SMU36000002023610001SA], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/SMU36000002023610001SA, July 22, 2022.
+
+U.S. Bureau of Labor Statistics, Producer Price Index by Industry: Building Material and Supplies Dealers [PCU44414441], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/PCU44414441, July 19, 2022.
+
+U.S. Bureau of Labor Statistics, Consumer Price Index for All Urban Consumers: All Items in U.S. City Average [CPIAUCSL], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/CPIAUCSL, July 25, 2022.
+
+### Repository Navigation
 
