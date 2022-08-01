@@ -117,5 +117,8 @@ U.S. Bureau of Labor Statistics, Producer Price Index by Industry: Building Mate
 
 U.S. Bureau of Labor Statistics, Consumer Price Index for All Urban Consumers: All Items in U.S. City Average [CPIAUCSL], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/CPIAUCSL, July 25, 2022.
 
-### Repository Navigation
+### Links to notebook and data
 
+View the Jupyter [notebook](../index.ipynb) for this project.
+
+Access the [CSV files](../data) that were used for analysis.
