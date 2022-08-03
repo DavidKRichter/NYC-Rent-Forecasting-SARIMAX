@@ -4,9 +4,9 @@
 
 ## Business Problem
 
-Under these circumstances, renters can benefit from a reliable forecast of the direction the housing market will take over the coming months. If rents are expected to shoot up even more, then the best strategy for renters would be to lock in a new lease sooner rather than later. They would also be advised to try to lock in a longer term lease if it at all possible, even if it means paying a higher monthly rent.
+Under these circumstances, New York renters can benefit from a reliable forecast of the direction the housing market will take over the coming months. If rents are expected to shoot up even more, then the best strategy  would be to sign a new lease sooner rather than later. Renters would also be advised to try to lock in a longer term lease, even if it means paying a higher monthly rent.
 
-On the other hand, if rents are expected to fall or stabilize, renters should probably avoid longer term leases and, if possible, wait until prices bottom out before looking for a new apartment.
+On the other hand, if rents are expected to fall or stabilize, renters should avoid longer term leases at high prices points and, if possible, wait until prices fall before looking for a new apartment.
 
 ## Data and Modeling
 
@@ -39,7 +39,7 @@ Categories three and four also correspond to different ways of explaining the ho
 
 ## Exogenous Variables as Leading Indicators
 
-While it seems intuitively likely that all of these factors have played some role in driving **current** rental prices, we can only rely on the predictive power of our exogenous variables if they make good predictions for earlier time periods as well. I therefore divided the data set into five three year periods and calculated the correlations of the target variable with each of the exogenous variables for a series of lags, the goal being to identify the exogenous variables that were consistent leading indicators for the target variable at a certain number of lags.
+While it seems likely that all of these factors have played some role in driving currently rental prices, we can only rely on the predictive power of our exogenous variables if our model make good predictions for earlier time periods as well. I therefore divided the data set into five three year periods and for each period, calculated the correlations of the target variable with each of the exogenous variables for a series of lags. My goal was to identify the exogenous variables that were consistent leading indicators for the target variable at a certain number of lags.
 
 Because the 2013-2019 period showed stable growth in both rental prices and most of the exogenous variables, correlations were often consistently high for all lags throughout this period. My choice of leading indicators was therefore heavily dependent on correlations for the other three periods.
 
@@ -61,23 +61,27 @@ For model validation, I trained models on the 2007-2019 period and tested them b
 
 As a baseline for my SARIMAX modeling, I looked at the performance of SARIMA models on the data using two metrics: AIC and RMSE for test data. AIC measures how well the model describes the data it has been trained on, penalizing models for adding terms that don't contribute significantly to the model's performance. RMSE tell us how the model is performing on test data. 
 
-The simplest SARIMA model (and AR(1) model) had an AIC score of 1132 and a testing RMSE of 226.
+The simplest SARIMA model (an AR(1) model) had an AIC score of 1132 and a testing RMSE of 226.
 
-The best SARIMA model in terms of AIC had an AIC score of 643 and an RMSE of 236, while the best SARIMA model in terms of error had an RMSE of 176, but an AIC score of 1055. 
+The best SARIMA model in terms of AIC had an AIC score of 643 and a testing RMSE of 236, while the best SARIMA model in terms of error had a testing RMSE of 176, but an AIC score of 1055. 
 
 ## SARIMAX Modeling
 
-Ideally, the best SARIMAX model would have modeled the 2007-2019 data better than the best SARIMA model, as measured by AIC score. However, because the 2007-2019 period was fairly uneventful, the best SARIMAX model by AIC actually underperformed the best SARIMA model by that metric--with an AIC of 644, one point higher than the best SARIMA model. Furthermore, it's RMSE for the test data was 226, which means that it also was worse than SARIMA at making predictions.
+Ideally, the best SARIMAX model would have modeled the 2007-2019 data better than the best SARIMA model, as measured by AIC score. However, because the 2007-2019 period was fairly uneventful, the best SARIMAX model by AIC actually underperformed the best SARIMA model by that metric--with an AIC of 644, one point higher than the best SARIMA model. Furthermore, its RMSE for the test data was 226, which means that it also was worse than SARIMA at making predictions.
 
 I next looked at the best SARIMAX models by RMSE. The top 2 used Building Materials and Total Wages and Salaries as exogenous regressors. However, these had AIC scores of 1096 and 1055. Furthermore, dynamic predictions for three periods of training data showed much larger error than the error for the training data, with true values falling outside the predictions' 95% confidence intervals. While adding additional MA terms would have both widened the confidence interval and improved the model, they would have done little to reduce the model's awkward fit on the training data.
 
-The model I ultimately chose included three exogenous regressors: Building Materials 12 Month Lag, Employees in Construction 6 Month Lag, and Manhattan Sale Prices 6 Month lag. The first version of this model had an error of 128, which was only slightly above that of the lowest RMSE models, while it's AIC was 855. Error was reduced to 135 and AIC to 835 by adding AR terms through lag 2 and MA terms through lag 7. This also reduced the error of the 2010-2013 dynamic prediction from 322 to 154. This is significant improvement because it means that even though the model was selected primarily for its ability to predict rental prices for the 2019-2022 period, it also performs well on earlier periods, including both the stable 2013-2019 period and the more anomalous recovery period of 2010-2013. While this model's AIC wasn't quite as low as that of the best SARIMA model it was the only SARIMAX model to both minimize AIC score while significantly improving upon the performance of the most accurate SARIMA model.
+## Best Model
+
+I model I ultimately chose had the lowest AIC score out of the 20 SARIMAX models with the lowest RMSE for the testing data. 
+
+This best model included three exogenous regressors: Building Materials 12 Month Lag, Employees in Construction 6 Month Lag, and Manhattan Sale Prices 6 Month lag. The first version of this model had an error of 128, which was only slightly above that of the lowest RMSE models, while its AIC was 855. Error was reduced to 135 and AIC to 835 by adding AR terms through lag 2 and MA terms through lag 7. This also reduced the error of the 2010-2013 dynamic prediction from 322 to 154. This is a significant improvement because it means that even though the model was selected primarily for its ability to predict rental prices for the 2019-2022 period, it also performs well on earlier periods, including both the stable 2013-2019 period and the more anomalous recovery period of 2010-2013. While this model's AIC wasn't quite as low as that of the best SARIMA model it was the only SARIMAX model to both minimize AIC score while significantly improving upon the performance of the most accurate SARIMA model.
 
 ### Model Coefficients and Interpretation
 
 While the Manhattan Sale Price coefficient was not significant, Building Materials 12 Month Lag and Employees in Construction 6 Month Lag had coefficients of 6.5523 and 16.1230 respectively, with p-values below 0.0005.
 
-This means that in our model, variations in the cost of Building Materials accounts for $520 in total Rental Prices variation over the 2007-2022 period, while variation in the number of Employees in Construction accounts for $333 of variation in Rental Prices.
+This means that in our model, variations in the cost of Building Materials accounts for $520 in Rental Price variation over the 2007-2022 period, while variation in the number of Employees in Construction accounts for $333 of variation in Rental Prices.
 
 This shows up most dramatically at the beginning of COVID when a drop in Employees in Construction precedes a drop in rental prices and in late 2021, when the rise in the cost of construction materials a year earlier corresponds to a rise in rental prices. 
 
@@ -85,23 +89,23 @@ While there is an intuitive relationship between high costs of building material
 
 ### Using our Model for Forecasting
 
-To use our model for forecasting through June 2023, we had to interpolate values for our exogenous variables at the end of our data set. Because the cost of Building Materials is lagged by 12 Months, we only had to interpolate a single value, whereas for Manhattan Sale Prices and Employees in Construction we had to interpolate values for around a half a year. Values for Manhattan Sale Prices have very little effect on the model, so the only space for significant error comes from Employees in Construction, which we assumed to be rising at a monthly rate equal to the average monthly rate over the past year. 
+To use our model for forecasting through June 2023, we had to extrapolate values for our exogenous variables at the end of our data set. Because the cost of Building Materials is lagged by 12 Months, we only had to extrapolate a single value, whereas for Manhattan Sale Prices and Employees in Construction we had to extrapolate values for around a half a year. Values for Manhattan Sale Prices have very little effect on the model, so the only space for significant error comes from Employees in Construction, which we assumed to be rising at a monthly rate equal to the average monthly rate over the past year. 
 
 ![Retrained Model Performance on Past Data](../../blob/main/images/FinalModel.png)
 
-Prior to forecasting, the SARIMAX model was retrained on the full 2007-2022 data set. Coefficients for all variables rose slightly (7.2239 for Building Materials and 21.0244 for Employees in Construction), but remained within the 95% confidence interval that was calculated based on data for the 2007-2019 period. This should reassure us, since it means that the model's coefficients haven't been drastically shifted due to the greater volatility of the 2019-2022 period.
+Prior to forecasting, the SARIMAX model was retrained on the full 2007-2022 data set. Coefficients for our two main variables rose (7.2239 for Building Materials and 21.0244 for Employees in Construction), but remained within the 95% confidence interval that was calculated based on data for the 2007-2019 period. This should reassure us, since it means that the model's coefficients haven't been drastically shifted due to the greater volatility of the 2019-2022 period.
 
 ![Retrained Model Coefficients](../../blob/main/images/exog_contributions.png)
 
-Forecasting through June 2023, our retrained model predicts that median rents will drop to almost $3100 in September of 2022 before rising again and stabilizing at around $3400 by the middle of 2023. The worst case scenario (the upper bound of the model's 95% confidence interval) sees an only slight slowing in rental increases, with rents rising above $3700 by mid-2023, while the best case scenario (the lower bound of the model's 95% confidence interval) sees median rents dropping below $3000 and then stabilizing between $3000 and $3100 by mid-next year.
+Forecasting through June 2023, our retrained model predicts that median rents will drop to almost $3100 in September of 2022 and stabilize over the winter before rising above $3400 by the middle of 2023. The worst case scenario (the upper bound of the model's 95% confidence interval) sees an only slight slowing in rental increases, with rents rising above $3700 by mid-2023, while the best case scenario (the lower bound of the model's 95% confidence interval) sees median rents dropping below $3000 and then stabilizing between $3000 and $3100 by mid-next year.
 
 ![Model Forecast](../../blob/main/images/forecast.png)
 
 ### Recommendations and Caveats
 
-Assuming the mean prediction to be the correct one, we would advise renters to wait until September to sign a new lease. While our model suggests a strong likelihood that rents could rise slightly during this period rather than fall, we're unlikely to see rises comparable to those we've seen in the past six months.
+Assuming the mean prediction to be the correct one, we would advise renters to wait until the fall or winter to sign a new lease. While our model suggests a strong likelihood that rents could rise slightly during this period rather than fall, we're unlikely to see rises comparable to those we've seen in the past six months.
 
-That said, there are a two other factors to take into account that we weren't able to address with SARIMAX modeling. 
+That said, we need to account for some of the limitations of SARIMAX modeling. 
 
 First, because the target data has been smoothed, it doesn't fully account for seasonal fluctuations in rental prices. However, because rents are typically lower during winter months, the prospect of seasonal fluctuations should if anything strengthen our recommendation to hold off before signing a new lease.
 
