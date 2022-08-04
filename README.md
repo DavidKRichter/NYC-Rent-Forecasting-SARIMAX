@@ -135,6 +135,8 @@ U.S. Bureau of Labor Statistics, Consumer Price Index for All Urban Consumers: A
 
 ### Links to notebook and data
 
+View this project's [Google Slides](../../blob/main/presentation.pdf) presentation.
+
 View the Jupyter [notebook](../../tree/main/index.ipynb) for this project.
 
 View [CSV files](../../tree/main/data).
