@@ -116,7 +116,7 @@ While the Manhattan Sale Price coefficient for this model was not significant, B
 
 ![Model Coefficients](../../blob/main/images/exog_contributions_best.png)
 
-This means that in our model, variation in the cost of Building Materials accounts for $740 in Rental Price variation over the 2007-2022 period, while variation in the number of Employees in Construction accounts for $430 of variation in Rental Prices.
+This means that in our model, variation in the cost of Building Materials accounts for over $660 in Rental Price variation over the 2007-2022 period, while variation in the number of Employees in Construction accounts for $330 of variation in Rental Prices.
 
 This shows up most dramatically at the beginning of COVID when a drop in Employees in Construction precedes a drop in rental prices and in late 2021, when the rise in the cost of construction materials a year earlier corresponds to a rise in rental prices. 
 
