@@ -105,6 +105,8 @@ The first version of this model had an error of 128, which was only slightly abo
 Below we see these dynamic predictions plotted, along with true values for the rental index:
 
 
+![Model Performance on Past Data](../../blob/main/images/BestSARIMAXModel.png)
+
 Even though the model was selected primarily for its ability to predict rental prices for the 2019-2022 period, it also performs well on earlier periods, including both the stable 2013-2019 period and the more anomalous recovery period of 2010-2013. While this model's AIC was 200 points above that of the best SARIMA model, it was the only SARIMAX model to both minimize AIC score while significantly improving upon the predictions of the most accurate SARIMA model.
 
 ### Model Coefficients and Interpretation
@@ -112,6 +114,7 @@ Even though the model was selected primarily for its ability to predict rental p
 While the Manhattan Sale Price coefficient for this model was not significant, Building Materials 12 Month Lag and Employees in Construction 6 Month Lag had coefficients of 6.5523 and 16.1230 respectively, with p-values below 0.0005. Below we see how each of these coefficients contributes to the overall predictions made by our model. 
 
 
+![Model Coefficients](../../blob/main/images/exog_contributions_best.png)
 
 This means that in our model, variation in the cost of Building Materials accounts for $740 in Rental Price variation over the 2007-2022 period, while variation in the number of Employees in Construction accounts for $430 of variation in Rental Prices.
 
