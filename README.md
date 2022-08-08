@@ -64,9 +64,13 @@ For model validation, I trained models on the 2007-2019 period and tested them b
 
 As a baseline for my SARIMAX modeling, I looked at the performance of SARIMA models on the data using two metrics: AIC and RMSE for test data. AIC measures how well the model describes the data it has been trained on, penalizing models for adding terms that don't contribute significantly to the model's performance. RMSE tell us how the model is performing on test data. 
 
-The simplest SARIMA model (an AR(1) model) had an AIC score of 1132 and a testing RMSE of 226.
+The table below compares AIC and RMSE for a baseline model, the SARIMA model with the lowest AIC and the SARIMA model whose dynamic predictions yielded the smallest RMSE based on our set of test data.
 
-The best SARIMA model in terms of AIC had an AIC score of 643 and a testing RMSE of 236, while the best SARIMA model in terms of error had a testing RMSE of 176, but an AIC score of 1055. 
+|                      | AIC  | RMSE Test Data |
+|----------------------|------|----------------|
+| Baseline AR(1) Model | 1132 | 226            |
+| Best SARIMA by AIC   | 643  | 236            |
+| Best SARIMA by RMSE  | 1055 | 176            |
 
 ## SARIMAX Modeling
 
@@ -74,15 +78,40 @@ Ideally, the best SARIMAX model would have modeled the 2007-2019 data better tha
 
 I next looked at the best SARIMAX models by RMSE. The top 2 used Building Materials and Total Wages and Salaries as exogenous regressors and their dyanmic predictions yielded RMSEs of 112 and 116. However, these had AIC scores of 1096 and 1055, 400 points higher than our best SARIMA models. Furthermore, dynamic predictions for three periods of training data showed much larger error than the error for the training data, with true values falling outside the predictions' 95% confidence intervals. While adding additional MA terms would have both widened the confidence interval and improved the model, they would have done little to reduce the model's awkward fit on the training data.
 
-## Best Model
+## Choosing a SARIMAX Model
 
-The model I ultimately chose had the lowest AIC score out of the 20 SARIMAX models with the lowest RMSE for the testing data. 
+As the table below shows, the best SARIMAX model by AIC had a high level of error, while the best SARIMAX model in terms of error had a high RMSE. The model I ultimately chose had the lowest AIC score out of the 20 SARIMAX models with the lowest RMSE for the testing data. 
 
-This model included three exogenous regressors: Building Materials 12 Month Lag, Employees in Construction 6 Month Lag, and Manhattan Sale Prices 6 Month lag. The first version of this model had an error of 128, which was only slightly above that of the lowest RMSE models, while its AIC was 855. Error was reduced to 125 and AIC to 835 by adding AR terms through lag 2 and MA terms through lag 7. This also reduced the error of the 2010-2013 dynamic prediction from 322 to 154. This is a significant improvement because it means that even though the model was selected primarily for its ability to predict rental prices for the 2019-2022 period, it also performs well on earlier periods, including both the stable 2013-2019 period and the more anomalous recovery period of 2010-2013. While this model's AIC was 200 points above that of the best SARIMA model, it was the only SARIMAX model to both minimize AIC score while significantly improving upon the predictions of the most accurate SARIMA model.
+|                      | AIC  | RMSE Test Data |
+|----------------------|------|----------------|
+| Best SARIMAX by AIC  | 644  | 226            |
+| Best SARIMAX by RMSE | 1096 | 112            |
+| Best SARIMAX Overall | 835  | 125            |
+
+This model included three exogenous regressors: 
+- Building Materials 12 Month Lag
+- Employees in Construction 6 Month Lag
+- Manhattan Sale Prices 6 Month lag. 
+
+The first version of this model had an error of 128, which was only slightly above that of the lowest RMSE models, while its AIC was 855. Error was reduced to 125 and AIC to 835 by adding AR terms through lag 2 and MA terms through lag 7. Below we can see the error of the model's predictions for four periods, the last of which is the testing period:
+
+|           | RMSE Dynamic Predictions |
+|-----------|--------------------------|
+| 2010-2013 | 154                      |
+| 2013-2016 | 42                       |
+| 2016-2019 | 47                       |
+| 2019-2022 | 125                      |
+
+Below we see these dynamic predictions plotted, along with true values for the rental index:
+
+
+Even though the model was selected primarily for its ability to predict rental prices for the 2019-2022 period, it also performs well on earlier periods, including both the stable 2013-2019 period and the more anomalous recovery period of 2010-2013. While this model's AIC was 200 points above that of the best SARIMA model, it was the only SARIMAX model to both minimize AIC score while significantly improving upon the predictions of the most accurate SARIMA model.
 
 ### Model Coefficients and Interpretation
 
-While the Manhattan Sale Price coefficient for this model was not significant, Building Materials 12 Month Lag and Employees in Construction 6 Month Lag had coefficients of 6.5523 and 16.1230 respectively, with p-values below 0.0005.
+While the Manhattan Sale Price coefficient for this model was not significant, Building Materials 12 Month Lag and Employees in Construction 6 Month Lag had coefficients of 6.5523 and 16.1230 respectively, with p-values below 0.0005. Below we see how each of these coefficients contributes to the overall predictions made by our model. 
+
+
 
 This means that in our model, variation in the cost of Building Materials accounts for $740 in Rental Price variation over the 2007-2022 period, while variation in the number of Employees in Construction accounts for $430 of variation in Rental Prices.
 
