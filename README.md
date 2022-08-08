@@ -1,10 +1,10 @@
 # Using SARIMAX Modeling to Predict the New York Rental Market
 
-2022 is a hard year to be a renter in New York City. Rental prices have reached record highs and news sources including the [Times](https://www.nytimes.com/2022/07/11/business/economy/rent-inflation-interest-rates.html) report that potential homeowners priced out of a similarly hot housing market may be driving up prices even further. A more recent Times [story](https://www.nytimes.com/2022/08/01/nyregion/why-its-so-hard-to-find-an-affordable-apartment-in-new-york.html) blames New York's restrictive zoning regulations for the city's failure to keep up with increasing demand.
+2022 is a hard year to be a renter in New York City. Rental prices have reached record highs and news sources including the [Times](https://www.nytimes.com/2022/07/11/business/economy/rent-inflation-interest-rates.html) report that potential homeowners priced out of a similarly hot housing market may be driving up prices even further. A more recent Times [story](https://www.nytimes.com/2022/08/01/nyregion/why-its-so-hard-to-find-an-affordable-apartment-in-new-york.html) blames New York's restrictive zoning regulations for the city's failure to keep up with increasing demand. So how can NYC Renters save money in this hot rental market?
 
 ## Business Problem
 
-Under these circumstances, New York renters can benefit from a reliable forecast of the direction the housing market will take over the coming months. If rents are expected to shoot up even more, then the best strategy  would be to sign a new lease sooner rather than later. Renters would also be advised to try to lock in a longer term lease, even if it means paying a higher monthly rent.
+Under these circumstances, New York renters can benefit from a reliable forecast of the direction the housing market will take over the coming months. If rents are expected to shoot up even more, then the best strategy would be to sign a new lease sooner rather than later. Renters would also be advised to try to lock in a longer term lease, even if it means paying a higher monthly rent.
 
 On the other hand, if rents are expected to fall or stabilize, renters should avoid longer term leases at high prices points and, if possible, wait until prices fall before looking for a new apartment.
 
