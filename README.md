@@ -10,7 +10,7 @@ On the other hand, if rents are expected to fall or stabilize, renters should av
 
 ## Data and Modeling
 
-For this study I built a SARIMAX model to predict rents based on StreetEasy's NYC Rental Index, a metric that uses a repeat-price method to measure monthly change in median rent and that includes values from January 2007 through May 2022.
+For this study I built a SARIMAX model to predict rents based on StreetEasy's NYC Rental Index, a metric that uses a repeat-price method to measure monthly change in median rent and that includes 185 index values from January 2007 through May 2022. Because data was only available for this relatively short date range, we're not able to be as confident in our predictions as we would be if were able to validate our model over a longer time frame.
 
 SARIMAX modeling is an extension of SARIMA modeling, in which values of a time series are regressed against past values and error terms for that same series. With SARIMAX modeling, the time series is also regressed against additional exogenous variables.
 
@@ -18,28 +18,26 @@ SARIMAX modeling is an extension of SARIMA modeling, in which values of a time s
 
 Since I wanted to be able to predict rental values in advance, I needed to choose exogenous variables that were correlated with rental prices at a minimum six month lag. 
 
-I began by identifying a number of variables that I thought showed potential as leading indicators for changes in rental prices. The variables I initially chose were:
+I began by identifying a number of variables that I thought showed potential as leading indicators for changes in rental prices. The variables fell into four basic categories:
 
-1. Sale Price Indices for NYC, Manhattan, Brooklyn and Queens
-2. Federal Funds Rate
-3. Average 30 Year Mortgage Rate
-4. PPI (Producer Price Index) for Building and Construction Materials
-5. Employees in Construction in New York State
-6. CPI (Consumer Price Index) for Urban Consumers
-7. Total Personal Income in New York State
-8. Total Wages and Salaries in New York State
-
-These metrics fall into four basic categories
-1. Sale Price Indices measure the price of a comparable good (real estate)
-2. Fed Funds Rate and Mortgage Rate measure the price of credit
-3. PPI for Building Materials and Employees in Construction both affect the supply of housing
-4. Total Income and Total Wages and Salaries both affect demand for housing
-
-Categories three and four also correspond to different ways of explaining the housing crisis that New York is currently facing. Category three explains it in terms of barriers to the construction of affordable housing, while category four explains it in terms of excess demand--which means either more people trying to move to New York or inflation driven by higher incomes. 
+1. Measures of Home Prices
+   - StreetEasy Sale Price Index NYC
+   - StreetEasy Sale Price Index Manhattan
+   - StreetEasy Sale Price Index Brooklyn
+   - StreetEasy Sale Price Index Queens
+2. Measures of the Price of Credit
+   - Federal Funds Rate
+   - 30 Year Mortgage Rate
+3. Measures of Inflation
+   - PPI (Producer Price Index) for Building and Construction Materials
+   - CPI (Consumer Price Index) for Urban Consumers
+4. Measures of Demand
+   - Total Personal Income in New York State
+   - Total Wages and Salaries in New York State
 
 ## Exogenous Variables as Leading Indicators
 
-While it seems likely that all of these factors have played some role in driving currently rental prices, we can only rely on the predictive power of our exogenous variables if our model make good predictions for earlier time periods as well. I therefore divided the data set into five three year periods and for each period, calculated the correlations of the target variable with each of the exogenous variables for a series of lags. My goal was to identify the exogenous variables that were consistent leading indicators for the target variable at a certain number of lags.
+While it seems likely that all of these factors have played some role in driving current rental prices, we can only rely on the predictive power of our exogenous variables if our model make good predictions for earlier time periods as well. I therefore divided the data set into five three year periods and for each period, calculated the correlations of the target variable with each of the exogenous variables for a series of lags. My goal was to identify the exogenous variables that were consistent leading indicators for the target variable at a certain number of lags.
 
 Because the 2013-2019 period showed stable growth in both rental prices and most of the exogenous variables, correlations were often consistently high for all lags throughout this period. My choice of leading indicators was therefore heavily dependent on correlations for the other three periods.
 
