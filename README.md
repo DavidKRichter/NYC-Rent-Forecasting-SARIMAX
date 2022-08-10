@@ -144,7 +144,9 @@ That said, we need to account for some of the limitations of our SARIMAX model.
 
 First, our model is based on a limited data set, including only 185 months of Rental Data. This implies a real possibility that the correlation between Building Materials and rents and between Employees in Construction and rents may be purely coincidental. Our choice to adopt this model is therefore based not only on the model's ability to fit the data but also on the plausibility that these variables are in fact related to rental prices. 
 
-Second, because the target data has been smoothed, our model doesn't fully account for seasonal fluctuations in rental prices. However, because rents are typically lower during winter months, the prospect of seasonal fluctuations should if anything strengthen our recommendation to wait until fall or winter before signing a new lease.
+Second, because the target data has been smoothed, our model doesn't fully account for seasonal fluctuations in rental prices. However, because rents are typically around $80 lower during winter months (as shown in the chart below), the prospect of seasonal fluctuations should if anything strengthen our recommendation to wait until fall or winter before signing a new lease.
+
+![Seasonal Component of Rent](../../blob/main/images/seasonalcomp.png)
 
 Third, the fact that we selected a model based on its full 2007-2022 track record means that the model necessarily fails to register the effects of variables whose influence on the rental market is less consistent and more dependent on specific conjunctural factors. For example, we were unable to incorporate interest rate data into our model, even though shifts in US monetary policy and the bond market are likely have economic effects that extend to the rental market. 
 
