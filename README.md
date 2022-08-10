@@ -175,3 +175,14 @@ View this project's [Google Slides](../../blob/main/presentation.pdf) presentati
 View the Jupyter [notebook](../../tree/main/index.ipynb) for this project.
 
 View [CSV files](../../tree/main/data).
+
+### Repository Structure
+```
+.
+├── data : data used for modeling
+├── images : images used in README
+├── README.md : project information and repository structure
+├── index.ipynb : jupyter notebook used for modeling
+├── presentation.pdf : presentation for stakeholders
+└── requirements.txt: requirements file
+```
