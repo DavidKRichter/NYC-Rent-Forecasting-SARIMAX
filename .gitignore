@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# PDFs
+notebook.pdf
+github.pdf
