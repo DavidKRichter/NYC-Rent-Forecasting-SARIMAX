@@ -15,7 +15,7 @@ On the other hand, if rents are expected to fall or stabilize, renters should av
 
 ## Data and Modeling
 
-For this study I built a SARIMAX model to predict rents based on StreetEasy's NYC Rental Index, a metric that uses a repeat-price method to measure monthly change in median rent and that includes 185 index values from January 2007 through May 2022. Because data was only available for this relatively short date range, we're not able to be as confident in our predictions as we would be if were able to validate our model over a longer time frame.
+For this study I built a SARIMAX model to predict rents based on StreetEasy's NYC Rental Index, a metric that uses a repeat-price method to measure monthly change in median rent and that includes 185 index values from January 2007 through May 2022. Because data was only available for this relatively short date range, our model will necessarily have greater error than it would if it were based on a larger amount of amount.
 
 SARIMAX modeling is an extension of SARIMA modeling, in which values of a time series are regressed against past values and error terms for that same series. With SARIMAX modeling, the time series is also regressed against additional exogenous variables.
 
@@ -40,69 +40,66 @@ I began by identifying a number of variables that I thought showed potential as 
    - Total Personal Income in New York State
    - Total Wages and Salaries in New York State
 
+## Use of First Differencing
+
+Because the Rental Index is not a stationary series, I knew that a SARIMA model fit to the data would have to employ a single degree of differencing. In other words, the model needs to predict changes in rental price rather than prices, since these values are distributed around the same constant for the entirety of the series. Exogenous variables used to predict rental prices therefore need to be correlated with the first difference of the Rental Price, rather than the rental price itself.
+
 ## Exogenous Variables as Leading Indicators
 
-While it seems likely that all of these factors have played some role in driving current rental prices, we can only rely on the predictive power of our exogenous variables if our model make good predictions for earlier time periods as well. I therefore divided the data set into five three year periods and for each period, calculated the correlations of the target variable with each of the exogenous variables for a series of lags. My goal was to identify the exogenous variables that were consistent leading indicators for the target variable at a certain number of lags.
+While it seems likely that all of these factors have played some role in driving current rental prices, we can only rely on the predictive power of our exogenous variables if they are consistently correlated with the target during multiple periods. I therefore divided the data set into five three year periods and for each period, calculated the correlations of the differenced target variable with the first difference of each of the exogenous variables for a series of lags. My goal was to identify the exogenous variables that were consistent leading indicators for the target variable at a certain number of lags.
 
-Because the 2013-2019 period showed stable growth in both rental prices and most of the exogenous variables, correlations were often consistently high for all lags throughout this period. My choice of leading indicators was therefore heavily dependent on correlations for the other three periods.
+In order to rank the most consistently correlated variables, I calculated bootstrapped confidence intervals based on the each set of five correlations and selected the exogenous variables with the highest 2.5% confidence interval and the lowest 97.5% confidence interval.
 
-Ultimately I only chose fives lagged variables as leading indicators for modeling:
+Based on these criteria, I chose the following exogenous variables to include in SARIMAX modeling:
 
-1. Total Wages and Salaries NYS 6 Month Lag
-2. Employees in Construction NYS 6 Month Lag
-3. Manhattan Sale Prices 6 Month Lag
-4. Cost of Building Materials 12 Month Lag
-5. Employees in Construction NYS 24 Month Lag
-
-The first four of these variables showed positive correlations at the given lag for all five periods. Employees in Construction showed a strong negative correlation--but only for three of the five periods. I was therefore uncertain whether it would serve as a good predictor, but wanted to test its performance since I was intrigued by the possibility of establishing a negative relationship between the size of the construction industry and rental prices.
-
-Since I wanted to avoid multicollinearity in the predictive variables I was using for modeling, I selected only combinations of these variables for which the maximum VIF was below 10.
+1. Manhattan Sale Price Index 16 Month Lag 1 Difference
+2. Manhattan Sale Price Index 9 Month Lag 1 Difference
+3. Federal Funds Rate 4 Month Lag 1 Difference
+4. Wages and Salaries 6 Month Lag 1 Difference
+5. Building Materials 14 Month Lag 1 Difference
 
 ## SARIMA Modeling
 
-For model validation, I trained models on the 2007-2019 period and tested them based on their dynamic predictions for the 2019-2022 period. 
+In selecting exogenous variables for modeling, I used correlations from all periods in the data set, from 2007 to 2022. This was necessary because without including all periods, it would have been unlikely that I'd be able to identify leading indicators for the dramatic rise and fall in rental prices during the COVID-19 period. However, this all foreclosed the possibility of including a holdout testing set.
 
-As a baseline for my SARIMAX modeling, I looked at the performance of SARIMA models on the data using two metrics: AIC and RMSE for test data. AIC measures how well the model describes the data it has been trained on, penalizing models for adding terms that don't contribute significantly to the model's performance. RMSE tell us how the model is performing on test data. 
+In the absence of a testing set, SARIMAX models cannot be validated based on error, since error doesn't tell us whether or not our model is overfitting on the data. We therefore have to instead use an information criterion (either AIC or BIC) in order to measure the degree to which our model is being improved through the addition of new regressors.
 
-The table below compares AIC and RMSE for a baseline model, the SARIMA model with the lowest AIC and the SARIMA model whose dynamic predictions yielded the smallest RMSE based on our set of test data.
+As a baseline for my SARIMAX modeling, I first determined the best SARIMA model by AIC by testing out combinations of endogenous regressors and adding additional terms to decrease the correlation of residuals. By fitting a SARIMA model before adding exogenous regressors, I wanted to ensure that these exogenous regressors were actually improving the model rather than simply being fit to approximate it. In addition to recording the model's AIC based on its month-ahead predictions, I also calculated AIC values for 6 month and 12 month dynamic predictions. Since the purpose of this study was to predict rental values in advance, it was necessary to compare not just how well the model made step-ahead predictions, but also how will it made predictions over longer time periods.
 
-|                      | AIC  | RMSE Test Data |
-|----------------------|------|----------------|
-| Baseline AR(1) Model | 1132 | 226            |
-| Best SARIMA by AIC   | 643  | 236            |
-| Best SARIMA by RMSE  | 1055 | 176            |
+Below we see AIC scores for our SARIMA model for Step-ahead predictions, 6 month dynamic forecasts and 12 month dynamic forecasts, as well as the model's heteroskedasticity, skew, and kurtosis values.
+
+|              | (1, 1, 4)x(0, 1, 1, 12) SARIMA Model |
+|--------------|--------------------------------------|
+| 1 Month AIC  | 895.884                              |
+| 6 Month AIC  | 1365.436                             |
+| 12 Month AIC | 1595.835                             |
+| Heterosk.    | 1.40.                                |
+| Skew         | -0.30.                               |
+| Kurtosis.    | 4.96.                                |
+
+Looking at a plot showing the model's 12 month predictions and confidence intervals we can see that this model failed to predict the most recent rises in rent with true values falling outside the model's blue-shaded prediction intervals.
 
 ## SARIMAX Modeling
 
-Ideally, the best SARIMAX model would have modeled the 2007-2019 data better than the best SARIMA model, as measured by AIC score. However, because the 2007-2019 period was fairly uneventful, the best SARIMAX model by AIC actually underperformed the best SARIMA model by that metric--with an AIC of 644, one point higher than the best SARIMA model. Furthermore, its RMSE for the test data was 226, which means that it also was worse than SARIMA at making predictions.
+To choose the optimal SARIMAX model I added every possible combination of exogenous variables to the SARIMA model above and printed out AIC, 6 month AIC and 12 month AIC fore each model. While none of the SARIMAX models improved on the one-step-ahead or 6 month AIC score, two of them improved on the model's 12 month AIC score, in the best cased by 25 points. This model used three regressors:
 
-I next looked at the best SARIMAX models by RMSE. The top 2 used Building Materials and Total Wages and Salaries as exogenous regressors and their dyanmic predictions yielded RMSEs of 112 and 116. However, these had AIC scores of 1096 and 1055, 400 points higher than our best SARIMA models. Furthermore, dynamic predictions for three periods of training data showed much larger error than the error for the training data, with true values falling outside the predictions' 95% confidence intervals. While adding additional MA terms would have both widened the confidence interval and improved the model, they would have done little to reduce the model's awkward fit on the training data.
+1. Manhattan Sale Price Index 9 Month Lag 1 Difference
+2. Federal Funds Rate 4 Month Lag 1 Difference
+3. Building Materials 14 Month Lag 1 Difference
 
-## Choosing a SARIMAX Model
+After adding an additional MA term to this model, its 12 month AIC was only 15 points better than that of the best SARIMA model, while one-step and 6 month ahead AIC were significantly worse. However, as we can see below it also had lower measures of heteroskedasticity, skew and kurtosis.
 
-As the table below shows, the best SARIMAX model by AIC had a high level of error, while the best SARIMAX model in terms of error had a high RMSE. The model I ultimately chose had the lowest AIC score out of the 20 SARIMAX models with the lowest RMSE for the testing data. 
 
-|                      | AIC  | RMSE Test Data |
-|----------------------|------|----------------|
-| Best SARIMAX by AIC  | 644  | 226            |
-| Best SARIMAX by RMSE | 1096 | 112            |
-| Best SARIMAX Overall | 835  | 125            |
+|              | (1, 1, 4)x(0, 1, 1, 12) SARIMA Model | (1, 1, 5)x(0, 1, 1, 12) + Exogs |
+|--------------|--------------------------------------|---------------------------------|
+| 1 Month AIC  | 895.884                              | 961.145                         |
+| 6 Month AIC  | 1365.436                             | 1388.149                        |
+| 12 Month AIC | 1595.835                             | 1580.282.                       |
+| Heterosk.    | 1.40.                                | 1.07.                           |
+| Skew         | -0.30.                               | 0.03                            |
+| Kurtosis.    | 4.96.                                | 3.59                            |
 
-This model included three exogenous regressors: 
-- Building Materials 12 Month Lag
-- Employees in Construction 6 Month Lag
-- Manhattan Sale Prices 6 Month lag. 
-
-The first version of this model had an error of 128, which was only slightly above that of the lowest RMSE models, while its AIC was 855. Error was reduced to 125 and AIC to 835 by adding AR terms through lag 2 and MA terms through lag 7. Below we can see the error of the model's predictions for four periods, the last of which is the testing period:
-
-|           | RMSE Dynamic Predictions |
-|-----------|--------------------------|
-| 2010-2013 | 154                      |
-| 2013-2016 | 42                       |
-| 2016-2019 | 47                       |
-| 2019-2022 | 125                      |
-
-Below we see these dynamic predictions plotted, along with true values for the rental index:
+Below we see these dynamic predictions plotted, along with true values for the rental index. While this model still shows significant error in its dynamic predictions, the most rent rise in rent did fall within the model's prediction intervals, a reflection of the model's lower AIC for 12 month dynamic predictions.
 
 
 ![Model Performance on Past Data](../../blob/main/images/BestSARIMAXModel.png)
